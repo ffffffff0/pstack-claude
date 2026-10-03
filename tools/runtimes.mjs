@@ -84,7 +84,7 @@ export function codexModelNamesSection(models) {
     `model diversity, so a panel spans both families. On Codex the panel is ${code(local)} as a subagent plus ` +
     `${codeList(cross)} through \`cross-run.mjs\` per [cross-family](cross-family.md). When the other family is ` +
     "unreachable, follow that file's fallback and say in the verdict that the panel was single-family.\n\n" +
-    "`/setup-pstack` writes the configured model list. On Codex, that list is your Codex model slugs plus the Claude slugs that answer through `cross-run.mjs`."
+    "`/setup-pstack` writes the configured model list. On Codex, that list is your Codex model slugs plus the Claude slugs in the panel line above that answer through `cross-run.mjs`; panels keep a Claude seat."
   );
 }
 
