@@ -84,7 +84,7 @@ session hook: on
 
 On Claude Code, if `<config>/CLAUDE.md` does not already include `<config>/pstack-models.md`, append an `@` line naming the sheet's resolved path, such as `@~/.claude/pstack-models.md`, so the model rows load on every session. If the user prefers project scope, add the include to the project's `CLAUDE.md` instead.
 
-On Codex, paste the model rows and the `default effort` line into `<codex-home>/AGENTS.md`; Codex has no `@` include. Do not paste the `session hook` line there: the plugin hook reads it directly from `<codex-home>/pstack-models.md`.
+On Codex, paste the model rows and the `default effort` line into `<codex-home>/AGENTS.md`; Codex has no `@` include. Add this line under them so Claude seats keep the read-only relay: Run every `claude-*` entry through the plugin's `skills/poteto-mode/scripts/cross-run.mjs` (read-only unless the role must edit), never a bare `claude -p`. Do not paste the `session hook` line there: the plugin hook reads it directly from `<codex-home>/pstack-models.md`.
 
 ### 8. Offer a verification skill (optional)
 
