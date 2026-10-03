@@ -53,7 +53,7 @@ Skills name Claude defaults in their Models sections. Those aliases do not resol
 - A Claude Code entry that is already an OpenAI slug (`gpt-5.6-sol`): spawn it as a normal Codex subagent.
 - Diverse-model panels (`arena`, `architect`, `interrogate`, `reflect`): the adversarial signal comes from model diversity, so a panel spans both families. On Codex the panel is `gpt-5.6-sol` as a subagent plus `claude-opus-5-5`, `claude-sonnet-5-5` through `cross-run.mjs` per [cross-family](cross-family.md). When the other family is unreachable, follow that file's fallback and say in the verdict that the panel was single-family.
 
-`/setup-pstack` writes the configured model list. On Codex, that list is your Codex model slugs plus the Claude slugs that answer through `cross-run.mjs`.
+`/setup-pstack` writes the configured model list. On Codex, that list is your Codex model slugs plus the Claude slugs in the panel line above that answer through `cross-run.mjs`; panels keep a Claude seat.
 
 ## Session routing hook
 
