@@ -73,19 +73,18 @@ function checkPiModels(pi, { raw, fail, isObject }) {
 }
 
 export function codexModelNamesSection(models) {
-  const strongest = models.roles.filter((r) => r.tier === "strongest");
+  const byTier = (tier) => models.roles.filter((r) => r.tier === tier).map((r) => code(r.role));
+  const [local, ...cross] = models.codex.panel;
   return (
-    "Skills name Claude defaults (a single-role default for code/prose/judgment plus a diverse-model panel for " +
-    "diverse-model panels; each model-consuming skill lists its own in a Models section). These slugs do not " +
-    "resolve on Codex. Substitute your configured Codex models:\n\n" +
-    `- Single-model roles: your primary Codex model (for example ${code(models.codex.default)}).\n` +
-    `- Roles that default to the strongest Claude model (${strongest.map((r) => code(r.role)).join(", ")}): ` +
-    `your strongest Codex model (for example ${code(models.codex.strongest)}).\n` +
-    "- Diverse-model panels (`arena`, `architect`, `interrogate`, `how` critics, `reflect`): the adversarial " +
-    "signal comes from model diversity, so use the distinct Codex models available to you. A good default panel " +
-    `on ChatGPT is ${codeList(models.codex.panel)}. If only one model family is reachable, vary reasoning ` +
-    "effort and note in the verdict that diversity was reduced.\n\n" +
-    "`/setup-pstack` writes the configured model list. On Codex, set it to your Codex model slugs."
+    "Skills name Claude defaults in their Models sections. Those aliases do not resolve on Codex. Substitute:\n\n" +
+    `- Code roles on the \`fast\` tier (${byTier("fast").join(", ")}): ${code(models.codex.fast)}.\n` +
+    `- Judgment roles on the \`default\` and \`strongest\` tiers: ${code(models.codex.default)}.\n` +
+    `- A Claude Code entry that is already an OpenAI slug (${codeList(models.external ?? [])}): spawn it as a normal Codex subagent.\n` +
+    "- Diverse-model panels (`arena`, `architect`, `interrogate`, `reflect`): the adversarial signal comes from " +
+    `model diversity, so a panel spans both families. On Codex the panel is ${code(local)} as a subagent plus ` +
+    `${codeList(cross)} through \`cross-run.mjs\` per [cross-family](cross-family.md). When the other family is ` +
+    "unreachable, follow that file's fallback and say in the verdict that the panel was single-family.\n\n" +
+    "`/setup-pstack` writes the configured model list. On Codex, that list is your Codex model slugs plus the Claude slugs that answer through `cross-run.mjs`."
   );
 }
 

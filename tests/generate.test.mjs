@@ -176,9 +176,9 @@ describe("strayModelSlugs", () => {
   });
 
   test("a backticked family name outside an owned region is a stray", () => {
-    const text = "# other\n\nDelegate to `fable` for this.\n";
+    const text = "# other\n\nDelegate to `sonnet` for this.\n";
     expect(strayModelSlugs("plugins/pstack/skills/other/SKILL.md", text, models)).toEqual([
-      "plugins/pstack/skills/other/SKILL.md:3: Delegate to `fable` for this.",
+      "plugins/pstack/skills/other/SKILL.md:3: Delegate to `sonnet` for this.",
     ]);
   });
 });
@@ -603,6 +603,18 @@ describe("effort agents", () => {
     expect(text).toContain('subagent_type: "pstack:effort-<level>"');
     expect(text).toContain('subagent_type: "pstack:poteto-agent-<level>"');
     expect(text).toContain("`reasoning_effort`");
+  });
+});
+
+describe("read-only effort agents", () => {
+  const poteto = "---\nname: poteto-agent\ndescription: d\n---\n\n# P\n";
+  const reviewer = "---\nname: reviewer\ndescription: d\ndisallowedTools: Edit, Write, NotebookEdit\n---\n\n# R\n\nRead only.\n";
+  const agents = effortAgents(["high"], poteto, reviewer);
+
+  test("a reviewer variant per level keeps edits disabled and carries the reviewer body", () => {
+    const result = agents.find((agent) => agent.name === "reviewer-high");
+    expect(result.text).toContain("\ndisallowedTools: Edit, Write, NotebookEdit\neffort: high\n---\n");
+    expect(result.text.endsWith("---\n\n# R\n\nRead only.\n")).toBe(true);
   });
 });
 

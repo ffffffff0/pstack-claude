@@ -18,7 +18,7 @@ pstack skills are written in Claude Code tool language (the `Skill` tool, the `A
 | Wait for a subagent result | `wait_agent` |
 | Free a finished subagent slot | `close_agent` |
 | Track tasks (the todolist; `TaskCreate` / `TaskUpdate`, or `TodoWrite` on Claude Code) | `update_plan` |
-| Ask the human a fixed-choice question (`AskUserQuestion`) | Ask in plain text and let the user answer. Codex has no structured-choice tool. |
+| Ask the human a fixed-choice question (`AskUserQuestion`) | Call `request_user_input` with the choices; only the root thread can call it. A subagent asks in plain text and lets the user answer. |
 
 Subagent dispatch needs `multi_agent` enabled. Add to `~/.codex/config.toml`:
 
@@ -35,20 +35,23 @@ poteto-mode's Subagents section sets Claude-specific defaults (`subagent_type: "
 
 - There is no `poteto-agent` subagent type. Route an ad-hoc subagent through poteto-mode's style by dispatching a `spawn_agent` whose instructions tell it to read the `poteto-mode` skill in full first.
 - `spawn_agent` calls already run concurrently with your turn, so `run_in_background: true` has no separate flag. Issue the dispatch and continue.
-- There are no `pstack:effort-<level>` or `pstack:poteto-agent-<level>` types. When a role value carries `@<level>`, or the `default effort` line names a level, pass that level as `spawn_agent`'s `reasoning_effort` and keep the dispatch otherwise unchanged. `session` passes no `reasoning_effort`.
+- There are no `pstack:effort-<level>` or `pstack:poteto-agent-<level>` types. When a role value carries `@<level>`, or the `default effort` line names a level, pass that level as `spawn_agent`'s `reasoning_effort`. `session` passes no `reasoning_effort`.
+- `spawn_agent` takes `model` and `reasoning_effort` only with `fork_turns` set to `"none"` (or a turn count): a full-history fork, the default, inherits the parent's model and effort and ignores both. So set `fork_turns: "none"` whenever a role names a model or an effort, and make that brief self-contained, since the subagent no longer sees this conversation. A `subagent_type` names a role; on Codex that field is `agent_type`.
+- `subagent_type: "pstack:reviewer"` means a read-only subagent. Codex has no such role: dispatch with `fork_turns: "none"` and a brief that forbids file edits, or run the seat through `cross-run.mjs` without `--write`, which uses Codex's read-only sandbox.
 - There is no `comment-sicko` subagent type either. The **no-comments** skill spawns it on Claude Code; on Codex dispatch a `spawn_agent` whose instructions tell it to read `poteto-mode/references/agents/comment-sicko.md` in full first.
 - Claude Code runs every subagent on this machine, so the **swarm** skill's workers and the fan-out playbooks (`orchestrate`, `autopilot-full`, `autopilot-stack`) isolate writers with worktrees. The same holds on Codex.
 - Keep the rest of the policy unchanged. Pass file pointers not inlined context, give each worker its own worktree or branch when they write, review every subagent's diff yourself.
 
 ## Model names
 
-Skills name Claude defaults (a single-role default for code/prose/judgment plus a diverse-model panel for diverse-model panels; each model-consuming skill lists its own in a Models section). These slugs do not resolve on Codex. Substitute your configured Codex models:
+Skills name Claude defaults in their Models sections. Those aliases do not resolve on Codex. Substitute:
 
-- Single-model roles: your primary Codex model (for example `gpt-6-sol`).
-- Roles that default to the strongest Claude model (`bug-fix`, `perf-issue`, `hillclimb`, `strongest judgment`): your strongest Codex model (for example `gpt-6-astra`).
-- Diverse-model panels (`arena`, `architect`, `interrogate`, `how` critics, `reflect`): the adversarial signal comes from model diversity, so use the distinct Codex models available to you. A good default panel on ChatGPT is `gpt-6-astra`, `gpt-6-sol`, `gpt-6-luna`. If only one model family is reachable, vary reasoning effort and note in the verdict that diversity was reduced.
+- Code roles on the `fast` tier (`feature, refactoring`, `bug-fix`, `perf-issue`, `hillclimb`, `how explorer`, `why investigators`, `swarm workers`): `gpt-5.6-sol`.
+- Judgment roles on the `default` and `strongest` tiers: `gpt-5.6-sol`.
+- A Claude Code entry that is already an OpenAI slug (`gpt-5.6-sol`): spawn it as a normal Codex subagent.
+- Diverse-model panels (`arena`, `architect`, `interrogate`, `reflect`): the adversarial signal comes from model diversity, so a panel spans both families. On Codex the panel is `gpt-5.6-sol` as a subagent plus `claude-opus-5-5`, `claude-sonnet-5-5` through `cross-run.mjs` per [cross-family](cross-family.md). When the other family is unreachable, follow that file's fallback and say in the verdict that the panel was single-family.
 
-`/setup-pstack` writes the configured model list. On Codex, set it to your Codex model slugs.
+`/setup-pstack` writes the configured model list. On Codex, that list is your Codex model slugs plus the Claude slugs that answer through `cross-run.mjs`.
 
 ## Session routing hook
 
@@ -73,7 +76,7 @@ Affected skill entry points and the optional Codex slash stubs point here. Most 
 
 | Skill | On Codex |
 |-------|----------|
-| `interrogate` | The `subagent_type`/`model`/`readonly` dispatch fields map to `spawn_agent`; substitute your configured Codex models and keep the reviewer panel model-diverse. |
+| `interrogate` | The `subagent_type`/`model` dispatch fields map to `spawn_agent` (with `fork_turns: "none"`); substitute your configured Codex models and keep one reviewer on the Claude family through `cross-run.mjs`. |
 | `setup-pstack` | The skill's Other runtimes table names the Codex sheet path and how it loads; the slugs are your Codex models (see Model names above). The role rows are identical. |
 | `no-comments` | There is no `comment-sicko` subagent type; see Subagent policy above. |
 | `teach` | Running `how` and `why` in parallel maps to `spawn_agent` fan-out; image generation uses the configured Codex equivalent. |

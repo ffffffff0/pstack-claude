@@ -283,18 +283,19 @@ describe("agentSkills reads frontmatter as YAML", () => {
 });
 
 describe("Codex model names", () => {
-  test("names a strongest Codex model for the roles that default to it on Claude", () => {
+  test("maps each Claude tier to a Codex model and keeps panels two-family", () => {
     const raw = JSON.parse(readFileSync(join(repoRoot, "plugins/pstack/models.json"), "utf8"));
     const oneOff = raw.roles.map((r) => (r.role === "swarm workers" ? { ...r, models: ["haiku"] } : r));
     const section = codexModelNamesSection(resolveModels({ ...raw, roles: oneOff }));
-    const strongestLine = section.split("\n").find((line) => line.includes("strongest Claude model"));
+    const fastLine = section.split("\n").find((line) => line.includes("`fast` tier"));
 
-    expect(strongestLine).not.toContain("swarm workers");
-
-    expect(strongestLine).toContain(`\`${raw.codex.strongest}\``);
-    for (const role of ["bug-fix", "perf-issue", "hillclimb", "strongest judgment"]) {
-      expect(section).toContain(role);
-    }
+    expect(fastLine).not.toContain("swarm workers");
+    expect(fastLine).toContain(`\`${raw.codex.fast}\``);
+    for (const role of ["bug-fix", "perf-issue", "hillclimb"]) expect(fastLine).toContain(role);
+    const panelLine = section.split("\n").find((line) => line.includes("Diverse-model panels"));
+    for (const slug of raw.codex.panel) expect(panelLine).toContain(`\`${slug}\``);
+    expect(panelLine).toContain("cross-run.mjs");
     for (const family of raw.available) expect(section).not.toContain(`\`${family}\``);
   });
+
 });
