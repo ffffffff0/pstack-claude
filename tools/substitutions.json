@@ -18,8 +18,8 @@
     },
     {
       "pattern": "The system prompt names the workspace's `agent-transcripts/` directory.",
-      "replacement": "Claude Code stores them at `~/.claude/projects/<encoded-cwd>/*.jsonl`, where `<encoded-cwd>` is the workspace's working directory with `/` → `-`.",
-      "rationale": "Claude Code's system prompt does not name a transcripts directory, so the port names the path and its encoding"
+      "replacement": "Claude Code stores them at `~/.claude/projects/<encoded-cwd>/*.jsonl`, where `<encoded-cwd>` is the workspace's working directory with every character other than a letter or digit replaced by `-` (`/Users/me/my.repo` becomes `-Users-me-my-repo`).",
+      "rationale": "Claude Code's system prompt does not name a transcripts directory, so the port names the path and its encoding; Claude Code replaces every non-alphanumeric character, dots included, so worktrees under .claude/ resolve"
     },
     {
       "pattern": "Spawn Comment Sicko, fix",
@@ -337,8 +337,8 @@
     },
     {
       "pattern": "arm a `/goal` with the full program objective. The goal continues across turns",
-      "replacement": "write the full program objective into the standing orders and restate it in your todolist. That objective stands across turns",
-      "rationale": "Cursor's /goal has no Claude Code equivalent"
+      "replacement": "arm the objective as a goal so the session keeps working across turns. On Codex call `create_goal` with it. On Claude Code propose it with the goal tool when you have one, else ask the operator to type `/goal <objective>` with your exact text. Also write it into the standing orders and restate it in your todolist. The goal continues across turns",
+      "rationale": "Claude Code (user-typed /goal or its goal tool) and Codex (create_goal) both keep a goal across turns; the standing orders keep a durable copy"
     },
     {
       "pattern": "bugbot comments",
@@ -349,6 +349,51 @@
       "pattern": "skeptical Bugbot triage",
       "replacement": "skeptical review-bot triage",
       "rationale": "same routing, in the autopilot owner loop"
+    },
+    {
+      "pattern": "- `readonly`: `true`",
+      "replacement": "- read-only: dispatch as `subagent_type: \"pstack:reviewer\"` in place of `general-purpose` (the `Agent` tool has no `readonly` field)",
+      "rationale": "Cursor's readonly (Ask mode) has no Agent-tool field; the port's read-only reviewer agent blocks edits"
+    },
+    {
+      "pattern": "- `readonly`: `false` (agent mode). **Do not use readonly/Ask mode.** It strips MCP access, which disables MCP-backed investigators entirely. Investigators still shouldn't write anything.",
+      "replacement": "- read-only: dispatch as `subagent_type: \"pstack:reviewer\"` in place of `general-purpose`. It blocks file edits but keeps MCP access, so MCP-backed investigators still work.",
+      "rationale": "Cursor's Ask mode strips MCP; the port's reviewer agent keeps MCP and still blocks edits, which is what upstream wanted"
+    },
+    {
+      "pattern": "- `readonly`: `false` (agent mode). The synthesizer's quality check spot-verifies citations, which can require MCP access. Readonly/Ask mode strips MCPs and defeats that.",
+      "replacement": "- read-only: dispatch as `subagent_type: \"pstack:reviewer\"` in place of `general-purpose`. It keeps the MCP access the synthesizer's citation spot-checks need.",
+      "rationale": "as above, for the why synthesizer"
+    },
+    {
+      "pattern": "Spawn one readonly judge subagent on that model.",
+      "replacement": "Spawn one read-only judge on that model: `subagent_type: \"pstack:reviewer\"`, or `cross-run.mjs` without `--write` for a cross-family pick.",
+      "rationale": "read-only judge via the port's reviewer agent; a cross-family judge runs through cross-run.mjs"
+    },
+    {
+      "pattern": "Check the diff against main and remove",
+      "replacement": "Check the diff against the branch's base (see [base branch](../poteto-mode/references/base-branch.md)) and remove",
+      "rationale": "many repos cut work from a dated or release branch, not main; base-branch.mjs finds the real base"
+    },
+    {
+      "pattern": "Otherwise use the current diff against the base branch, default `main`, including the working tree.",
+      "replacement": "Otherwise use the current diff against the base branch from [base branch](../poteto-mode/references/base-branch.md), including the working tree.",
+      "rationale": "as above"
+    },
+    {
+      "pattern": "If none exists, feed me the current diff against `main`.",
+      "replacement": "If none exists, feed me the current diff against the branch's base.",
+      "rationale": "as above"
+    },
+    {
+      "pattern": "- If on a feature branch, run `git diff main...HEAD` (or the appropriate base branch) for the full changeset",
+      "replacement": "- Otherwise review the branch against its base, including uncommitted work: `git diff $(git merge-base <base> HEAD)`, where `<base>` comes from [base branch](../poteto-mode/references/base-branch.md)",
+      "rationale": "as above"
+    },
+    {
+      "pattern": "The system prompt names Claude Code's per-project transcripts directory at `~/.claude/projects/<encoded-cwd>/`. Use that path.",
+      "replacement": "Claude Code keeps per-project transcripts at `~/.claude/projects/<encoded-cwd>/`, where `<encoded-cwd>` is the working directory with every character other than a letter or digit replaced by `-`. Use that path.",
+      "rationale": "Claude Code's system prompt does not name the transcripts directory; runs after the agent-transcripts rule rewrote the sentence's object"
     }
   ],
   "denylist": [
@@ -395,10 +440,6 @@
     {
       "token": "cursor.com",
       "hint": "Cursor product URL; check whether the sentence applies to Claude Code at all"
-    },
-    {
-      "token": "/goal",
-      "hint": "Cursor's /goal has no Claude Code equivalent; the autopilot playbooks keep the objective in standing orders"
     },
     {
       "token": "create-skill",

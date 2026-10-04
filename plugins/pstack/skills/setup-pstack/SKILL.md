@@ -13,7 +13,7 @@ On GitHub Copilot, follow [the Copilot setup](copilot.md) in place of steps 1, 3
 
 On another runtime, read [Other runtimes](#other-runtimes) below for where the sheet lives and how it loads; the steps are the same.
 
-Write the current runtime's per-role model override sheet, using the path in [Other runtimes](#other-runtimes). Each pstack skill names a default model inline; the override sheet adapts those defaults to the models you actually have access to.
+Write the current runtime's per-role model override sheet, using the path in [Other runtimes](#other-runtimes). Each model-consuming pstack skill lists its defaults in a Models section; the override sheet adapts those defaults to the models you actually have access to.
 
 Claude Code has no auto-applied "rules" mechanism like Cursor's `.mdc`. The Claude Code config directory is `$CLAUDE_CONFIG_DIR` when that variable is set and `~/.claude` otherwise. This skill calls it `<config>`. Inclusion is explicit: the user adds a line to `<config>/CLAUDE.md` (or their project `CLAUDE.md`) such as:
 
@@ -29,7 +29,7 @@ The Codex home directory is `$CODEX_HOME` when that variable is set and `~/.code
 
 ### 1. Detect available models
 
-Enumerate the model names the `Agent` tool's `model` parameter accepts in this session. That is the dependable source. On Claude Code they are the family names listed in [Models](#models) below, each running that family's current model, and a full model ID is rejected. The default panel is listed there too. The panel is chosen for cross-family diversity. Ask the user to confirm or paste any additional slugs they want available. Never write a real slug you have not confirmed is available. The aliases `inherit-parent` and `auto` are always valid even though they are not detected slugs. Both mean the role runs on the parent session's model, which the `Agent` call expresses by omitting `model`.
+Enumerate the model names the `Agent` tool's `model` parameter accepts in this session. That is the dependable source. On Claude Code they are the family names listed in [Models](#models) below, each running that family's current model, and a full model ID is rejected. The default panel is listed there too. The panel keeps one cross-family seat, run through `cross-run.mjs` (see [cross-family](../poteto-mode/references/cross-family.md)); validate it with that script instead of the `Agent` tool. Ask the user to confirm or paste any additional slugs they want available. Never write a real slug you have not confirmed is available. The aliases `inherit-parent` and `auto` are always valid even though they are not detected slugs. Both mean the role runs on the parent session's model, which the `Agent` call expresses by omitting `model`.
 
 ### 2. Load current state
 
@@ -58,23 +58,23 @@ Write the current runtime's sheet with the shape below. Overwrite the whole file
 
 Per-role model overrides for pstack skills. Each pstack SKILL.md names its defaults in a Models section; the values here override those defaults. Delete a line to fall back to the skill default. A value of `inherit-parent` or `auto` runs that role on the parent session's model (the `Agent` call omits `model`); an alias entry in a panel list still counts toward that panel's fan-out. A model may carry a reasoning effort, as in `opus @xhigh` (levels: low, medium, high, xhigh, max); the role then runs through the pstack effort agent of that level, each entry of a panel list on its own. `default effort` sets the level for a value without one; `session` keeps the parent session's effort. `session hook: off` stops the Claude Code or Codex SessionStart hook, or the pstack Pi extension, from injecting the poteto-mode mandate; any other value, or no line, leaves it on.
 
-feature, refactoring: opus
-bug-fix: fable
-perf-issue: fable
-hillclimb: fable
+feature, refactoring: sonnet
+bug-fix: sonnet
+perf-issue: sonnet
+hillclimb: sonnet
 judgment and prose: opus
-strongest judgment: fable
-how explorer: opus
+strongest judgment: opus
+how explorer: sonnet
 how explainer: opus
-why investigators: opus
+why investigators: sonnet
 why synthesizer: opus
-reflect tooling: opus
+reflect tooling: gpt-5.6-sol
 reflect judgment, divergent, synthesizer: opus
-arena runners: opus, fable, sonnet
-arena cross-judge pool: opus, fable, sonnet
-swarm workers: opus
-architect runners: opus, fable, sonnet
-interrogate reviewers: opus, fable, sonnet
+arena runners: opus, gpt-5.6-sol, sonnet
+arena cross-judge pool: opus, gpt-5.6-sol, sonnet
+swarm workers: sonnet
+architect runners: opus, gpt-5.6-sol, sonnet
+interrogate reviewers: opus, gpt-5.6-sol, sonnet
 
 default effort: session
 session hook: on
@@ -86,7 +86,11 @@ On Claude Code, if `<config>/CLAUDE.md` does not already include `<config>/pstac
 
 On Codex, paste the model rows and the `default effort` line into `<codex-home>/AGENTS.md`; Codex has no `@` include. Do not paste the `session hook` line there: the plugin hook reads it directly from `<codex-home>/pstack-models.md`.
 
-### 8. Confirm
+### 8. Offer a verification skill (optional)
+
+Check whether the project has a way to drive the real app for proof (a project `verify` skill, or an existing harness). If not, offer once: "want a project-local verification skill, so agents can drive the app the way a user does and prove changes work? I can generate one with /create-verification-skill." On yes, invoke the **create-verification-skill** skill. On no, move on.
+
+### 9. Confirm
 
 Tell the user where the override was written, how its model rows load, and whether the plugin hook is on. Re-running this skill updates the override sheet.
 
@@ -112,8 +116,9 @@ The role lines are the same everywhere. What differs is the sheet path, how the 
 
 Stamped from `plugins/pstack/models.json` (edit there, rerun `tools/generate.mjs`).
 
-- Available Claude models: `opus`, `fable`, `sonnet`, `haiku`
-- Default panel: `opus`, `fable`, `sonnet`
+- Available Claude models: `opus`, `sonnet`, `haiku`
+- Cross-family models (run through `cross-run.mjs`, see [cross-family](../poteto-mode/references/cross-family.md)): `gpt-5.6-sol`
+- Default panel: `opus`, `gpt-5.6-sol`, `sonnet`
 - Reasoning effort levels: `low`, `medium`, `high`, `xhigh`, `max`
 - Default reasoning effort: `session`
 - Single-role default: `opus`

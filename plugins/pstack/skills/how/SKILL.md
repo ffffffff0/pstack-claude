@@ -28,7 +28,7 @@ Decompose the question into 2 to 4 exploration angles, each a distinct slice of 
 
 - `subagent_type`: `general-purpose`
 - `model`: the `how explorer` line, default in [Models](#models)
-- `readonly`: `true`
+- read-only: dispatch as `subagent_type: "pstack:reviewer"` in place of `general-purpose` (the `Agent` tool has no `readonly` field)
 
 Each explorer gets the prompt in `references/explorer-prompt.md` with its angle filled in. Then go to Step 3.
 
@@ -38,7 +38,7 @@ Spawn one `Agent` subagent that explores and explains in one pass:
 
 - `subagent_type`: `general-purpose`
 - `model`: the `how explainer` line, default in [Models](#models)
-- `readonly`: `true`
+- read-only: dispatch as `subagent_type: "pstack:reviewer"` in place of `general-purpose` (the `Agent` tool has no `readonly` field)
 
 Build its prompt from `references/explainer-prompt.md` without the explorer-findings section. Go to Step 4.
 
@@ -48,7 +48,7 @@ Once all explorers have returned, spawn one `Agent` subagent to synthesize their
 
 - `subagent_type`: `general-purpose`
 - `model`: the `how explainer` line, default in [Models](#models)
-- `readonly`: `true`
+- read-only: dispatch as `subagent_type: "pstack:reviewer"` in place of `general-purpose` (the `Agent` tool has no `readonly` field)
 
 Build its prompt from `references/explainer-prompt.md` with every explorer's findings filled in.
 
@@ -62,11 +62,11 @@ The explanation uses the sections defined in `references/explainer-prompt.md`, d
 
 ## Models
 
-Role defaults, stamped from `plugins/pstack/models.json` (edit there, rerun `tools/generate.mjs`). A matching role line in the `pstack-models.md` override sheet overrides each at runtime; `/setup-pstack` writes it and lists its path per runtime.
+Role defaults, stamped from `plugins/pstack/models.json` (edit there, rerun `tools/generate.mjs`). A matching role line in the `pstack-models.md` override sheet overrides each at runtime; `/setup-pstack` writes it and lists its path per runtime. An entry from the other model family (`gpt-*` on Claude Code, `claude-*` on Codex) is a cross-family seat: run it through `cross-run.mjs` per [cross-family](../poteto-mode/references/cross-family.md), not the `Agent` tool or `spawn_agent`.
 
-- how explorer: `opus`
+- how explorer: `sonnet`
 - how explainer: `opus`
 
 ## Reasoning effort
 
-A role value in the override sheet may name a reasoning effort after its model, as in `opus @xhigh`. Levels on Claude Code: `low`, `medium`, `high`, `xhigh`, `max`. Which ones apply depends on the model. A value without `@` takes the sheet's `default effort` line, a level or `session`, and `session` when the sheet has no such line. `session` sets no effort, so the dispatch is the usual one. Strip the suffix before reading the model: `inherit-parent` or `auto` still omits `model` at every level, and a model name is passed as `model`. On Claude Code, a level picks the effort agent from the `subagent_type` you would otherwise use. `pstack:poteto-agent` becomes `subagent_type: "pstack:poteto-agent-<level>"`. `general-purpose`, or no `subagent_type`, becomes `subagent_type: "pstack:effort-<level>"`. The effort agents set only `effort`, so the model you pass still decides the model. On Codex, pass the level as `spawn_agent`'s `reasoning_effort` and keep the usual instructions.
+A role value in the override sheet may name a reasoning effort after its model, as in `opus @xhigh`. Levels on Claude Code: `low`, `medium`, `high`, `xhigh`, `max`. Which ones apply depends on the model. A value without `@` takes the sheet's `default effort` line, a level or `session`, and `session` when the sheet has no such line. `session` sets no effort, so the dispatch is the usual one. Strip the suffix before reading the model: `inherit-parent` or `auto` still omits `model` at every level, and a model name is passed as `model`. On Claude Code, a level picks the effort agent from the `subagent_type` you would otherwise use. `pstack:poteto-agent` becomes `subagent_type: "pstack:poteto-agent-<level>"`. `pstack:reviewer` becomes `subagent_type: "pstack:reviewer-<level>"`, which stays read-only. `general-purpose`, or no `subagent_type`, becomes `subagent_type: "pstack:effort-<level>"`. The effort agents set only `effort`, so the model you pass still decides the model. On Codex, pass the level as `spawn_agent`'s `reasoning_effort` and keep the usual instructions.

@@ -12,6 +12,12 @@
       "since": "0.9.34",
       "upstream": "not-proposed"
     },
+    "plugins/pstack/skills/arena/SKILL.md": {
+      "kind": "policy",
+      "why": "Adds a 'costly fan-out: only when the user asks or a playbook step calls it' clause to the description, since the port lets the model invoke skills that upstream kept user-only.",
+      "since": "0.9.58",
+      "upstream": "not-proposed"
+    },
     "plugins/pstack/skills/blast-radius/SKILL.md": {
       "kind": "policy",
       "why": "Extends the trigger to run before design when a brief asserts something about existing code.",
@@ -34,6 +40,18 @@
       "kind": "port-feature",
       "why": "Routes installation, model-sheet loading, and persistent routing preferences to the current runtime's setup sources, gives installed playbooks precedence over upstream guides, and keeps the port's public skill loading, hidden principles, verification-skill naming, local-worker advice, driver and built-in equivalents, excluded make-bot-ui row, and orchestrate wording as prose changes in this fork.",
       "since": "0.9.71",
+      "upstream": "not-proposed"
+    },
+    "plugins/pstack/skills/figure-it-out/SKILL.md": {
+      "kind": "policy",
+      "why": "Adds a 'costly fan-out: only when the user asks or a playbook step calls it' clause to the description, since the port lets the model invoke skills that upstream kept user-only.",
+      "since": "0.9.58",
+      "upstream": "not-proposed"
+    },
+    "plugins/pstack/skills/interrogate/SKILL.md": {
+      "kind": "port-feature",
+      "why": "Runs the cross-family reviewer seat through cross-run.mjs (with a single-family fallback) and adds the costly fan-out clause to the description.",
+      "since": "0.9.58",
       "upstream": "not-proposed"
     },
     "plugins/pstack/skills/poteto-mode/SKILL.md": {
@@ -216,12 +234,6 @@
       "since": "0.1.0",
       "upstream": "not-proposed"
     },
-    "plugins/pstack/skills/principle-test-behavior-not-implementation/SKILL.md": {
-      "kind": "policy",
-      "why": "Replaces the every-import-returns-undefined check with naming a relevant defect and confirming the test detects it.",
-      "since": "0.9.34",
-      "upstream": "not-proposed"
-    },
     "plugins/pstack/skills/recall/SKILL.md": {
       "kind": "policy",
       "why": "Sweeps the locations the project's standing rules name before reporting anything as never recorded and applies the human-rulings epistemics, on top of Claude Code's transcript path.",
@@ -250,6 +262,12 @@
       "kind": "policy",
       "why": "Prefixes a cell opening with a double quote so a spreadsheet or TSV reader cannot parse it as a quoted field, appends each row through one perl syswrite so parallel writers cannot interleave rows longer than the shell's stdio buffer, reports a short or failed write, and falls back to upstream's printf when perl is missing or does not work.",
       "since": "0.9.41",
+      "upstream": "not-proposed"
+    },
+    "plugins/pstack/skills/swarm/SKILL.md": {
+      "kind": "policy",
+      "why": "Adds a 'costly fan-out: only when the user asks or a playbook step calls it' clause to the description, since the port lets the model invoke skills that upstream kept user-only.",
+      "since": "0.9.58",
       "upstream": "not-proposed"
     },
     "plugins/pstack/skills/tdd/SKILL.md": {

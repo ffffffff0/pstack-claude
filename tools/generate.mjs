@@ -564,11 +564,15 @@ export function parseModels(raw, skillExists) {
   for (const key of ["tiers", ...RUNTIMES.filter((runtime) => runtime.key).map((runtime) => runtime.key)]) {
     if (!isObject(raw[key])) fail(`"${key}" must be an object`);
   }
-  const available = new Set(raw.available);
+  const external = raw.external ?? [];
+  if (!Array.isArray(external)) fail(`"external" must be a list`);
   unique(raw.available, "available");
   for (const tier of TIERS) {
     if (!Object.hasOwn(raw.tiers, tier)) fail(`tiers has no "${tier}", which a stamped region renders from`);
   }
+  unique(external, "external");
+  for (const slug of external) if (raw.available.includes(slug)) fail(`"${slug}" is in both available and external`);
+  const available = new Set([...raw.available, ...external]);
   const tierLists = new Map();
   for (const [tier, value] of Object.entries(raw.tiers)) {
     const slugs = [value].flat();
@@ -664,9 +668,12 @@ export function deriveSkill(file, text, models, leads) {
 
 export function modelsSection(roles) {
   const bullets = roles.map((r) => `- ${r.role}: ${codeList(r.models)}`).join("\n");
+  const link = roles[0]?.skill === "poteto-mode" ? "references/cross-family.md" : "../poteto-mode/references/cross-family.md";
   return (
     "Role defaults, stamped from `plugins/pstack/models.json` (edit there, rerun `tools/generate.mjs`). " +
-    "A matching role line in the `pstack-models.md` override sheet overrides each at runtime; `/setup-pstack` writes it and lists its path per runtime.\n\n" +
+    "A matching role line in the `pstack-models.md` override sheet overrides each at runtime; `/setup-pstack` writes it and lists its path per runtime. " +
+    "An entry from the other model family (`gpt-*` on Claude Code, `claude-*` on Codex) is a cross-family seat: " +
+    `run it through \`cross-run.mjs\` per [cross-family](${link}), not the \`Agent\` tool or \`spawn_agent\`.\n\n` +
     bullets
   );
 }
@@ -685,6 +692,7 @@ export function effortSection(levels, defaultEffort) {
     "at every level, and a model name is passed as `model`. " +
     "On Claude Code, a level picks the effort agent from the `subagent_type` you would otherwise use. " +
     "`pstack:poteto-agent` becomes `subagent_type: \"pstack:poteto-agent-<level>\"`. " +
+    "`pstack:reviewer` becomes `subagent_type: \"pstack:reviewer-<level>\"`, which stays read-only. " +
     "`general-purpose`, or no `subagent_type`, becomes `subagent_type: \"pstack:effort-<level>\"`. " +
     "The effort agents set only `effort`, so the model you pass still decides the model. " +
     "On Codex, pass the level as `spawn_agent`'s `reasoning_effort` and keep the usual instructions."
@@ -696,8 +704,9 @@ export function effortSection(levels, defaultEffort) {
 // pstack:poteto-agent instead of copying its routing contract, so only the
 // base agent reads as the routing target for /poteto-mode. A description is
 // written unquoted, so it must not open with a backtick: strict YAML rejects it.
-export function effortAgents(levels, potetoAgent) {
+export function effortAgents(levels, potetoAgent, reviewerAgent) {
   const { body } = parseFrontmatter(potetoAgent);
+  const reviewer = reviewerAgent && parseFrontmatter(reviewerAgent).body;
   return levels.flatMap((level) => [
     {
       name: `effort-${level}`,
@@ -716,6 +725,13 @@ export function effortAgents(levels, potetoAgent) {
         `Dispatched in place of \`pstack:poteto-agent\` when a pstack role's override names \`@${level}\`. The caller passes the model.\n` +
         `effort: ${level}\n---\n` + body,
     },
+    ...(reviewer === undefined ? [] : [{
+      name: `reviewer-${level}`,
+      text:
+        `---\nname: reviewer-${level}\ndescription: Runs \`pstack:reviewer\` (read-only) at ${level} reasoning effort. ` +
+        `Dispatched in place of \`pstack:reviewer\` when a pstack role's override names \`@${level}\`. The caller passes the model.\n` +
+        `disallowedTools: Edit, Write, NotebookEdit\neffort: ${level}\n---\n` + reviewer,
+    }]),
   ]);
 }
 
@@ -757,6 +773,7 @@ export function setupModelsSection(models) {
   return (
     "Stamped from `plugins/pstack/models.json` (edit there, rerun `tools/generate.mjs`).\n\n" +
     `- Available Claude models: ${codeList(models.available)}\n` +
+    `- Cross-family models (run through \`cross-run.mjs\`, see [cross-family](../poteto-mode/references/cross-family.md)): ${codeList(models.external ?? [])}\n` +
     `- Default panel: ${codeList(models.tiers.panel)}\n` +
     `- Reasoning effort levels: ${codeList(models.efforts)}\n` +
     `- Default reasoning effort: ${code(models.defaultEffort)}\n` +
@@ -938,7 +955,7 @@ export function plan(root, models) {
       put(`${runtime.prompts}/${skill.name}.md`, promptStub(skill, runtime, { preamble }));
     }
   }
-  const agents = effortAgents(models.efforts, read(`${PLUGIN}/agents/poteto-agent.md`));
+  const agents = effortAgents(models.efforts, read(`${PLUGIN}/agents/poteto-agent.md`), read(`${PLUGIN}/agents/reviewer.md`));
   for (const agent of agents) put(`${EFFORT_AGENTS}/${agent.name}.md`, agent.text);
   stamp(`${PLUGIN}/.claude-plugin/plugin.json`, (text) =>
     stampAgentPaths(text, [

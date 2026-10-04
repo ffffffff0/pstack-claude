@@ -246,7 +246,7 @@ describe("applySubstitutions", () => {
     [
       "skills/poteto-mode/playbooks/autopilot-stack.md",
       "On the operator's explicit go, arm a `/goal` with the full program objective. The goal continues across turns until the chain is done.",
-      "On the operator's explicit go, write the full program objective into the standing orders and restate it in your todolist. That objective stands across turns until the chain is done.",
+      "On the operator's explicit go, arm the objective as a goal so the session keeps working across turns. On Codex call `create_goal` with it. On Claude Code propose it with the goal tool when you have one, else ask the operator to type `/goal <objective>` with your exact text. Also write it into the standing orders and restate it in your todolist. The goal continues across turns until the chain is done.",
     ],
   ])("%s: an upstream sentence takes the port's one form", (rel, upstream, port) => {
     const { text } = applySubstitutions(upstream, RULES.substitutions, rel);
