@@ -28,7 +28,7 @@ describe("committed models.json", () => {
   test("available models are the names the Claude Code Agent tool accepts", () => {
     // The Agent tool's `model` parameter is an enum of family names; a full ID
     // such as claude-opus-5-5 is rejected before the subagent starts.
-    expect([...models.available].sort()).toEqual(["fable", "haiku", "opus", "sonnet"]);
+    expect([...models.available].sort()).toEqual(["haiku", "opus", "sonnet"]);
   });
 
   test("the file stays one row per entry so a role change is a one-line diff", () => {
@@ -51,7 +51,7 @@ describe("parseModels", () => {
     const arena = role(resolved, "arena runners");
     expect(arena.tier).toBe("panel");
     expect(arena.models).toEqual(raw.tiers.panel);
-    expect(role(resolved, "bug-fix").models).toEqual([raw.tiers.strongest]);
+    expect(role(resolved, "bug-fix").models).toEqual([raw.tiers.fast]);
   });
 
   test("a missing top-level key throws naming it", () => {
@@ -108,8 +108,12 @@ describe("parseModels", () => {
     );
   });
 
-  test("a duplicate slug in available or in a panel throws naming it", () => {
+  test("a duplicate slug in available, external, or a panel throws naming it", () => {
     expect(parse((p) => p.available.push("opus"))).toThrow('models.json: available lists "opus" twice');
+    expect(parse((p) => p.external.push("gpt-5.6-sol"))).toThrow('models.json: external lists "gpt-5.6-sol" twice');
+    expect(parse((p) => p.available.push("gpt-5.6-sol"))).toThrow(
+      'models.json: "gpt-5.6-sol" is in both available and external',
+    );
     expect(parse((p) => (p.tiers.panel = ["opus", "opus"]))).toThrow('models.json: tier "panel" lists "opus" twice');
     expect(parse((p) => (p.codex.panel = ["a", "a"]))).toThrow('models.json: codex "panel" lists "a" twice');
   });
