@@ -1242,8 +1242,29 @@ describe("sync CLI", () => {
       });
     const pin = () => JSON.parse(readFileSync(join(port, "tools/upstream.json"), "utf8")).components.kit.sha;
     const local = () => readFileSync(join(port, "plugins/pstack/skills/s.md"), "utf8");
-    return { oldSha, newSha, scratch, run, pin, local, port };
+    return { oldSha, newSha, scratch, run, pin, local, port, root, upstream };
   }
+
+  test("snapshot mode produces the same update without cloning", () => {
+    const { oldSha, newSha, run, pin, local, root, upstream } = cli({
+      oldText: "one\n",
+      newText: "two\n",
+      localText: "one\n",
+    });
+    const snapshots = join(root, "snapshots");
+    for (const sha of [oldSha, newSha]) {
+      const at = join(snapshots, sha);
+      mkdirSync(at, { recursive: true });
+      execFileSync("tar", ["-x", "-C", at], { input: execFileSync("git", ["-C", upstream, "archive", sha]) });
+    }
+
+    const result = run("--snapshots", snapshots);
+
+    expect(result.status).toBe(0);
+    expect(result.stdout).not.toContain("cloning");
+    expect(pin()).toBe(newSha);
+    expect(local()).toBe("two\n");
+  });
 
   test("a denylist failure exits 1 and removes its scratch clone", () => {
     const { run, scratch } = cli({ oldText: "one\n", newText: "run control-cli\n", localText: "one\n" });

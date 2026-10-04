@@ -4,7 +4,7 @@ Start with the [README](../README.md) for installation and your first task.
 
 ## Slash commands
 
-The package includes 56 skill directories: 32 public skills and 24 `principle-*` references. Claude Code uses `/pstack:<name>`, and Pi uses `/skill:<name>`. In Codex, request a skill by name or install the [optional shortcuts](#codex) for the `/name` form below.
+The package includes 57 skill directories: 33 public skills and 24 `principle-*` references. Claude Code uses `/pstack:<name>`, and Pi uses `/skill:<name>`. In Codex, request a skill by name or install the [optional shortcuts](#codex) for the `/name` form below.
 
 Find each skill's instructions in the [skills tree](../plugins/pstack/skills/).
 
@@ -20,6 +20,7 @@ Find each skill's instructions in the [skills tree](../plugins/pstack/skills/).
 | `/reflect` | capture a long task's lessons as a skill edit |
 | `/tdd` | fix a bug by writing the failing test first, then the fix |
 | `/benchmark-checklist` | vet a measured speedup or regression (limiter, tuning, errors, repeat runs, end-to-end relevance) before you report or act on it |
+| `/correct` | turn repeated agent mistakes into architecture, types, lint, or tests that prevent recurrence |
 | `/typescript-best-practices` | ground type-system discipline in TypeScript syntax |
 | `/teach` | explain a subsystem plainly by composing how + why |
 | `/swarm` | fan out N parallel workers across slices or races, then return one aggregated report |
@@ -77,7 +78,7 @@ Skills-only installs and other runtimes do not include the hook or the Pi extens
 Use this path for Prime Agent, opencode, Gemini CLI, or a skills-only Codex installation. Clone the repository and link its skills into `~/.agents/skills/`:
 
 ```shell
-git clone https://github.com/michael-denyer/pstack-claude
+git clone https://github.com/ffffffff0/pstack-claude
 cd pstack-claude
 mkdir -p ~/.agents/skills
 for s in plugins/pstack/skills/*/; do
@@ -99,7 +100,7 @@ To update, pull changes in the clone that the links point to. To uninstall a lin
 To install without keeping a local clone:
 
 ```shell
-npx skills add https://github.com/michael-denyer/pstack-claude/tree/main/plugins/pstack/skills --skill "*" --agent "*" --yes
+npx skills add https://github.com/ffffffff0/pstack-claude/tree/main/plugins/pstack/skills --skill "*" --agent "*" --yes
 ```
 
 The [CI installation check](../.github/workflows/ci.yml) uses the skills CLI to copy the checkout's skill tree and compare the installed files with their sources.
@@ -135,7 +136,7 @@ Each shortcut invokes its skill. The commands skip existing files and links. Rem
 
 ### Pi
 
-The repository root is a [Pi package](https://pi.dev/packages): its [`package.json`](../package.json) lists the shared skills directory and the [pstack Pi extension](../plugins/pstack/pi/index.ts). Install it with `pi install git:github.com/michael-denyer/pstack-claude`, or `pi install <clone path>` for a local checkout.
+The repository root is a [Pi package](https://pi.dev/packages): its [`package.json`](../package.json) lists the shared skills directory and the [pstack Pi extension](../plugins/pstack/pi/index.ts). Install it with `pi install git:github.com/ffffffff0/pstack-claude`, or `pi install <clone path>` for a local checkout.
 
 The extension supplies what Pi lacks natively, under the Claude Code names the skills use:
 
@@ -215,7 +216,7 @@ CI also checks shell scripts, workflows, Markdown, relative links, and the bundl
 
 ### Port scope and attribution
 
-The skill tree is synced against upstream `23e4138` (v0.15.6).
+The skill tree is synced against upstream `e43c7ee`.
 
 This repository ports Lauren Tan's pstack from Cursor to Claude Code and shares the skills with other runtimes. It includes seven cursor-team-kit skills and an independently authored `babysit` skill. The port supplies Claude Code plugin registration and routing, Codex manifests and shortcuts, the Codex tool mapping, and the Pi package, extension, and tool mapping.
 

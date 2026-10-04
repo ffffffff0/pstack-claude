@@ -2,6 +2,14 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.9.65 - maintained fork and sync to upstream e43c7ee
+
+The repository is now the `ffffffff0/pstack-claude` maintained fork of Michael Denyer's multi-runtime port of Lauren Tan's pstack. Installation and package links point to the maintained fork while preserving both upstream authors' attribution. The fork keeps its Claude Code and Codex model panel diverse through `cross-run.mjs`, preserves read-only reviewers at every reasoning effort, and finds the branch a worktree was actually cut from instead of assuming `main`.
+
+The pstack pin moves from `23e4138` to `e43c7ee`, three Cursor commits. It adds the public `correct` skill, strengthens `architect` against designs that invite partial agent edits, and simplifies performance hypothesis ordering. The sync updated four files, merged `architect/SKILL.md`, added `correct/SKILL.md`, left 73 files unchanged, and excluded 36 Cursor-only files. The generated Claude Code and Codex packages now expose 33 public skills and 24 principle references.
+
+`tools/sync.mjs` accepts an optional `--snapshots <dir>` source. Each `<dir>/<sha>` is a complete Cursor plugins checkout, including the pins of other synced components. This keeps the same three-way merge, substitutions, fork registry, and overlap checks when GitHub's Git transport is unavailable. `tests/sync.test.mjs` proves snapshot mode updates the same fixture without cloning.
+
 ## 0.9.64 - sync to upstream 23e4138 (v0.15.6)
 
 The upstream pin moves from `12d587d` to `23e4138`, upstream v0.15.6, one commit. It adds the `benchmark-checklist` skill and the `principle-explain-the-number` principle, which together vet a measured speedup or regression before anyone reports or acts on it. `poteto-mode` triggers `benchmark-checklist` on a benchmark and indexes the new principle, so the package now carries 32 public skills and 24 principles.

@@ -1,7 +1,10 @@
 #!/usr/bin/env bun
 // Sync this port forward to a new upstream SHA.
 //
-//   bun tools/sync.mjs <component> <new-sha> [--dry-run]
+//   bun tools/sync.mjs <component> <new-sha> [--dry-run] [--snapshots <dir>]
+//
+// `--snapshots` skips the clone. Its directory contains one full upstream
+// checkout per SHA at `<dir>/<sha>`, including every other component's pin.
 //
 // Reads tools/upstream.json (remote, per-component pin, and the `exclude`
 // list of upstream paths the port deliberately does not carry) and
@@ -418,30 +421,42 @@ function git(args) {
 }
 
 // Relative to `component`'s localPath, and read at each other component's own pin.
-function pathsOtherComponentsCarry(clone, components, component) {
+function pathsOtherComponentsCarry(clone, components, component, snapshots) {
   const { localPath } = components[component];
   return Object.entries(components)
     .filter(([name]) => name !== component)
-    .flatMap(([, other]) =>
-      git(["-C", clone, "ls-tree", "-r", "-z", "--name-only", other.sha, "--", other.upstreamPath])
-        .split("\0")
-        .filter(Boolean)
+    .flatMap(([, other]) => {
+      const paths = snapshots
+        ? walk(join(snapshots, other.sha, other.upstreamPath)).map((path) => relative(join(snapshots, other.sha), path))
+        : git(["-C", clone, "ls-tree", "-r", "-z", "--name-only", other.sha, "--", other.upstreamPath])
+            .split("\0")
+            .filter(Boolean);
+      return paths
         .map((path) => relative(other.upstreamPath, path))
         .filter((rel) => !isExcluded(rel, other.exclude ?? []))
         .map((rel) => relative(localPath, join(other.localPath, rel)))
-        .filter((rel) => !rel.startsWith("../")),
-    );
+        .filter((rel) => !rel.startsWith("../"));
+    });
 }
 
 function main() {
   const args = process.argv.slice(2);
   const dryRun = args.includes("--dry-run");
-  const [component, newSha] = args.filter((a) => a !== "--dry-run");
+  const valueOf = (flag) => {
+    const at = args.indexOf(flag);
+    return at === -1 ? undefined : args[at + 1];
+  };
+  const snapshots = valueOf("--snapshots");
+  const values = new Set([snapshots].filter(Boolean));
+  const [component, newSha] = args.filter((arg) => arg !== "--dry-run" && arg !== "--snapshots" && !values.has(arg));
   const upstreamPath = join(repo, "tools/upstream.json");
   const upstream = JSON.parse(readFileSync(upstreamPath, "utf8"));
   const spec = upstream.components[component];
   if (!spec || !newSha?.match(/^[0-9a-f]{7,40}$/)) {
-    console.error(`usage: bun tools/sync.mjs <${Object.keys(upstream.components).join("|")}> <new-sha> [--dry-run]`);
+    console.error(
+      `usage: bun tools/sync.mjs <${Object.keys(upstream.components).join("|")}> <new-sha> [--dry-run] ` +
+        "[--snapshots <dir>]",
+    );
     process.exit(2);
   }
   const { substitutions, denylist } = parseSubstitutions(
@@ -455,14 +470,24 @@ function main() {
 
   const scratch = mkdtempSync(join(tmpdir(), "pstack-sync-"));
   try {
-    console.log(`cloning ${upstream.remote} ...`);
-    git(["clone", "--filter=blob:none", upstream.remote, join(scratch, "clone")]);
-    const co = (sha, dest) => {
-      git(["-C", join(scratch, "clone"), "worktree", "add", "--detach", dest, sha]);
+    let clone;
+    const checkout = (sha, label) => {
+      if (snapshots) {
+        const at = join(snapshots, sha);
+        if (!existsSync(at)) throw new Error(`snapshot ${at} does not exist`);
+        return join(at, spec.upstreamPath);
+      }
+      if (!clone) {
+        console.log(`cloning ${upstream.remote} ...`);
+        clone = join(scratch, "clone");
+        git(["clone", "--filter=blob:none", upstream.remote, clone]);
+      }
+      const dest = join(scratch, label);
+      git(["-C", clone, "worktree", "add", "--detach", dest, sha]);
       return join(dest, spec.upstreamPath);
     };
-    const oldDir = co(spec.sha, join(scratch, "old"));
-    const newDir = co(newSha, join(scratch, "new"));
+    const oldDir = checkout(spec.sha, "old");
+    const newDir = checkout(newSha, "new");
 
     const report = syncComponent({
       oldDir,
@@ -471,7 +496,7 @@ function main() {
       rules: substitutions,
       denylist,
       exclude: spec.exclude ?? [],
-      carriedElsewhere: pathsOtherComponentsCarry(join(scratch, "clone"), upstream.components, component),
+      carriedElsewhere: pathsOtherComponentsCarry(clone, upstream.components, component, snapshots),
       derive: (rel, text) => deriveSkill(join(spec.localPath, rel), text, models, leads),
       forks,
       dryRun,
