@@ -34,7 +34,7 @@ Tests alone are not sufficient verification. A PR is verified only when its unit
 ### Arm the program
 
 - [ ] State the protocol and this plan to the operator, then stop. Start execution only on the operator's explicit go.
-- [ ] On the operator's go, write this exact text into the standing orders and restate it in your todolist. "<The plan path, the PR ids in order, the verification rule, who merges, and the done condition.>"
+- [ ] On the operator's go, arm this exact text as a goal (`create_goal` on Codex; on Claude Code the goal tool when you have one, else ask the operator to type `/goal` with it), and write it into the standing orders. "<The plan path, the PR ids in order, the verification rule, who merges, and the done condition.>"
 - [ ] Read these from the installed plugin at program start. Re-read them at every tick.
   - [ ] `skills/poteto-mode/playbooks/<execution playbook>.md`
   - [ ] `skills/swarm/SKILL.md`
@@ -131,7 +131,7 @@ Each live lane runs in its own worktree at the PR head. Drive through the skill 
 - [ ] Root's clean verdict at the exact head SHA.
 - [ ] Bugbot triage done.
 - [ ] Base and verdict are current under the execution playbook and the patch-id rule in `playbooks/shipping.md`.
-- [ ] <The owner squash-merges its own PR, or the root appends it to the base-branch stack and the operator lands it bottom-up.>
+- [ ] <The owner hands its PR off merge-ready and the operator merges it, or the root appends it to the base-branch stack and the operator lands it bottom-up.>
 
 ## Close the program
 
