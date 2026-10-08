@@ -120,7 +120,7 @@ describe("Copilot setup questions", () => {
     const table = questions.slice(questions.indexOf("| Tier | Roles |"), questions.indexOf("## Question sequence"));
     const rows = [...table.matchAll(/^\| (\w+) \| (.+) \|$/gm)].filter((m) => m[1] !== "Tier");
     const listed = rows.flatMap((m) => [...m[2].matchAll(/`([^`]+)`/g)].map((r) => [m[1].toLowerCase(), r[1]]));
-    expect(listed.sort()).toEqual(models.roles.map((r) => [r.tier, r.role]).sort());
+    expect(listed.sort()).toEqual(models.roles.map((r) => [r.tier === "fast" || !r.tier ? "default" : r.tier, r.role]).sort());
   });
 
   test("asks by tier, panel slot, override, and hook, in order", () => {

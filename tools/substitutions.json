@@ -48,13 +48,13 @@
       "rationale": "where Claude Code exposes its MCP servers"
     },
     {
-      "regex": "default to one each on `(?:claude|gpt|grok|gemini|composer)-[^`]+`, `(?:claude|gpt|grok|gemini|composer)-[^`]+`, `(?:claude|gpt|grok|gemini|composer)-[^`]+`\\.",
+      "regex": "default to one each on `(?:claude|gpt|grok|gemini|composer)-[^`]+`(?:(?:, | and |, and )`(?:claude|gpt|grok|gemini|composer)-[^`]+`)+\\.",
       "files": "^skills/arena/SKILL\\.md$",
       "replacement": "run one each on the defaults in [Models](#models).",
       "rationale": "the runner defaults are stamped into the Models section"
     },
     {
-      "regex": "choose from `(?:claude|gpt|grok|gemini|composer)-[^`]+`, `(?:claude|gpt|grok|gemini|composer)-[^`]+`, `(?:claude|gpt|grok|gemini|composer)-[^`]+`\\.",
+      "regex": "choose from `(?:claude|gpt|grok|gemini|composer)-[^`]+`(?:(?:, | and |, and )`(?:claude|gpt|grok|gemini|composer)-[^`]+`)+\\.",
       "files": "^skills/arena/SKILL\\.md$",
       "replacement": "choose from the runner defaults in [Models](#models).",
       "rationale": "the cross-judge pool defaults to the stamped runners"
@@ -66,7 +66,7 @@
       "rationale": "the fallback model is the stamped single-role default"
     },
     {
-      "regex": "use `(?:claude|gpt|grok|gemini|composer)-[^`]+`, `(?:claude|gpt|grok|gemini|composer)-[^`]+`, `(?:claude|gpt|grok|gemini|composer)-[^`]+`\\.",
+      "regex": "use `(?:claude|gpt|grok|gemini|composer)-[^`]+`(?:(?:, | and |, and )`(?:claude|gpt|grok|gemini|composer)-[^`]+`)+\\.",
       "files": "^skills/architect/SKILL\\.md$",
       "replacement": "use the defaults in [Models](#models).",
       "rationale": "the runner defaults are stamped into the Models section"
@@ -259,6 +259,11 @@
       "pattern": "Families go by prefix: `claude-*`, `gpt-*`, and `grok-*`.",
       "replacement": "Families go by model name, such as Opus, Fable, or Sonnet.",
       "rationale": "Claude Code names models by family, not by slug prefix"
+    },
+    {
+      "pattern": "Families go by prefix: `claude-*` and `grok-*`.",
+      "replacement": "Families go by model name, such as Opus, Fable, or Sonnet.",
+      "rationale": "same sentence after upstream dropped the gpt family"
     },
     {
       "pattern": ".cursor/skills/",

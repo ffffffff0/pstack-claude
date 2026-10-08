@@ -2,7 +2,7 @@
 
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-support-yellow?logo=buy-me-a-coffee&logoColor=white)](https://buymeacoffee.com/codenyer)
 
-Lauren Tan's [pstack](https://github.com/cursor/plugins/tree/main/pstack) is an opinionated Cursor skill stack that improves agent outcomes. This is a port for Claude Code, Codex, Pi, GitHub Copilot and other agent harnesses. It tracks upstream and also carries named policy forks, each declared in [`tools/forks.json`](tools/forks.json).
+Lauren Tan's [pstack](https://github.com/cursor/plugins/tree/main/pstack) is an opinionated Cursor skill stack that improves agent outcomes. Michael Denyer built the Claude Code, Codex, Pi, GitHub Copilot, and shared-skills port. This maintained fork follows both sources, keeps its local differences explicit in [`tools/forks.json`](tools/forks.json), and can sync Cursor releases without waiting for another port release.
 
 Tell `poteto-mode` your goal and it will invoke the correct workflow for the task. It keeps your code concise, simple and verified.
 
@@ -15,7 +15,7 @@ For concurrency bugs and invariants that tests cannot reach, see the separate [a
 Run in Claude Code:
 
 ```text
-/plugin marketplace add michael-denyer/pstack-claude
+/plugin marketplace add ffffffff0/pstack-claude
 /plugin install pstack@pstack-claude
 ```
 
@@ -24,7 +24,7 @@ Run in Claude Code:
 Run in your terminal:
 
 ```shell
-codex plugin marketplace add michael-denyer/pstack-claude
+codex plugin marketplace add ffffffff0/pstack-claude
 codex plugin add pstack@pstack-claude
 ```
 
@@ -33,7 +33,7 @@ codex plugin add pstack@pstack-claude
 Run in your terminal:
 
 ```shell
-pi install git:github.com/michael-denyer/pstack-claude
+pi install git:github.com/ffffffff0/pstack-claude
 ```
 
 The package loads the skills and the pstack Pi extension, which adds the subagent, question, and wake-up tools the skills use, plus `/loop` and the routing instruction. Invoke a skill with `/skill:<name>`.
@@ -43,7 +43,7 @@ The package loads the skills and the pstack Pi extension, which adds the subagen
 Run in your terminal:
 
 ```shell
-copilot plugin marketplace add michael-denyer/pstack-claude
+copilot plugin marketplace add ffffffff0/pstack-claude
 copilot plugin install pstack@pstack-claude
 ```
 

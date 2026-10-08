@@ -449,7 +449,12 @@ export function regions(models) {
           ["Default", "default"],
           ["Strongest", "strongest"],
           ["Panel", "panel"],
-        ].map(([label, tier]) => `| ${label} | ${models.roles.filter((r) => r.tier === tier).map((r) => code(r.role)).join(", ")} |`),
+        ].map(([label, tier]) => {
+          // Copilot asks no fast-model question and has no cross-family seat, so fast and
+          // explicit-model roles ride the Default row.
+          const roles = models.roles.filter((r) => r.tier === tier || (tier === "default" && (r.tier === "fast" || !r.tier)));
+          return `| ${label} | ${roles.map((r) => code(r.role)).join(", ")} |`;
+        }),
     },
     {
       file: `${PLUGIN}/hooks/session-start-copilot.md`,

@@ -2,6 +2,12 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.9.77 - sync Michael's port 0.9.76 and Cursor pstack df58112 (v0.15.15)
+
+This maintained fork moves onto Michael Denyer's port 0.9.76 and replays its local changes on top: cross-family panels through `cross-run.mjs`, branch-aware review bases (`base-branch.mjs`), and read-only effort reviewers. The `--snapshots` sync option is dropped, since the clone works again and the upstream sync tool was rewritten.
+
+Cursor pstack moves from `2cbf585` to `df58112`. `/poteto-help` now asks once whether to run `/setup-pstack` when the model sheet is missing and the answer depends on it. Upstream's switch of Cursor defaults from Sol to Grok does not apply here: the port's defaults come from `models.json`, so `interrogate`, `reflect`, `poteto-mode`, and `setup-pstack` keep their port wording. The arena and architect slug-list substitutions now match two-model lists as well as three.
+
 ## 0.9.76 - keep the parent's verdict out of reflect's reviewer prompts
 
 reflect passes the transcript path to its reviewers with nothing beside it. When the finder cannot locate the transcript, the fallback digest records the session's prompts, corrections, tool calls, results, and files in turn order, and states no diagnosis, verdict, or cause. A reviewer that reads the parent's conclusion first tends to audit that conclusion instead of the session ([#231](https://github.com/michael-denyer/pstack-claude/issues/231)).
