@@ -1,12 +1,16 @@
 # pstack
 
-[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-support-yellow?logo=buy-me-a-coffee&logoColor=white)](https://buymeacoffee.com/codenyer)
-
-Lauren Tan's [pstack](https://github.com/cursor/plugins/tree/main/pstack) is an opinionated Cursor skill stack that improves agent outcomes. Michael Denyer built the Claude Code, Codex, Pi, GitHub Copilot, and shared-skills port. This maintained fork follows both sources, keeps its local differences explicit in [`tools/forks.json`](tools/forks.json), and can sync Cursor releases without waiting for another port release.
+A maintained fork of pstack for Claude Code and Codex (Pi and GitHub Copilot work too). It tracks Lauren Tan's [pstack](https://github.com/cursor/plugins/tree/main/pstack) for Cursor and Michael Denyer's [port](https://github.com/michael-denyer/pstack-claude), and adds what we need on top. Every local difference is declared in [`tools/forks.json`](tools/forks.json), and [CHANGES.md](CHANGES.md) records each release.
 
 Tell `poteto-mode` your goal and it will invoke the correct workflow for the task. It keeps your code concise, simple and verified.
 
-For concurrency bugs and invariants that tests cannot reach, see the separate [agent-formal-verify](https://github.com/michael-denyer/agent-formal-verify) plugin, which adds TLA+ model checking and Lean proofs.
+## What this fork adds
+
+- **Cross-family panels.** `interrogate`, `arena`, and `architect` can seat GPT models next to Claude ones through `cross-run.mjs`, so a review or a design race is not one model family agreeing with itself. A seat that fails falls back to a single-family panel.
+- **Branch-aware review.** Diffs are taken against the branch the worktree was cut from, not `main`. Set `git config pstack.baseBranches "origin/DEV-*"` to sharpen the guess.
+- **Read-only reviewers at any effort.** Explorers, reviewers, and judges run on `pstack:reviewer-<level>` agents, which cannot edit files.
+- **A fast code model.** Routine code delegates run on a fast tier, while judgment and the hardest changes stay on the strongest model.
+- **Faster upstream sync.** Cursor releases are merged here directly, without waiting for the next port release.
 
 ## Install
 
@@ -80,10 +84,8 @@ pstack has no server or telemetry. Anything its skills ask your agent to read, i
 
 ## Contributing
 
-Thanks for helping make this port better. Bug reports, documentation fixes, and runtime improvements are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for the checks and where your change belongs. Report vulnerabilities privately as described in [SECURITY.md](SECURITY.md).
-
-To support maintenance of this port, [buy the maintainer a coffee](https://buymeacoffee.com/codenyer).
+Issues and pull requests are welcome at [ffffffff0/pstack-claude](https://github.com/ffffffff0/pstack-claude). See [CONTRIBUTING.md](CONTRIBUTING.md) for the checks and where your change belongs. Report vulnerabilities privately as described in [SECURITY.md](SECURITY.md).
 
 ## License
 
-This port, including its modifications and additions, is also [MIT-licensed](LICENSE), © 2026 Michael Denyer. Original pstack © 2026 Lauren Tan; imported cursor-team-kit skills © 2026 Cursor. See [LICENSE-cursor-team-kit](LICENSE-cursor-team-kit) and [NOTICE.md](NOTICE.md).
+This fork is [MIT-licensed](LICENSE). The port it builds on is © 2026 Michael Denyer. Original pstack © 2026 Lauren Tan; imported cursor-team-kit skills © 2026 Cursor. See [LICENSE-cursor-team-kit](LICENSE-cursor-team-kit) and [NOTICE.md](NOTICE.md).
