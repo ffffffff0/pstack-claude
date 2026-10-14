@@ -34,7 +34,6 @@ Launch all reviewers in a single message: an `Agent` call per Claude entry, and 
 | Reviewer A | `opus` |
 | Reviewer B | `gpt-5.6-sol` |
 | Reviewer C | `sonnet` |
-| Reviewer D | `haiku` |
 
 For each reviewer:
 - `subagent_type`: `general-purpose`
