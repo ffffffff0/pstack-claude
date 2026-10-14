@@ -2,6 +2,12 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.9.85 - sync Michael's port 0.9.84 and Cursor pstack 837067b
+
+This fork release rebuilds on Michael Denyer's port at 0.9.84 (thermos plugin, distilled prompts, `/ketchup`, the Codex SessionStart fix) and moves the Cursor pin from `997ffc7` to `837067b`. Upstream adds `/in-your-own-words`, which restates the user's goal and problem before work starts, shortens `/ketchup` to a few plain sentences and small visuals, and updates `principle-fix-root-causes` and the `/poteto-help` routing table.
+
+The fork's local changes are replayed on top: panel defaults span two model families (`opus`, `gpt-5.6-sol`, `sonnet`) with the GPT seat run through `cross-run.mjs`; reviews diff against the branch the worktree was cut from; read-only roles dispatch as `pstack:reviewer` and its effort variants. `how` and `why` took upstream's distilled text, so their reviewer dispatch is now declared in `tools/forks.json`. `figure-it-out` follows upstream's description again.
+
 ## 0.9.84 - run the Codex SessionStart hook again
 
 0.9.83 shipped a root `plugins/pstack/plugin.json` in the Agent Plugins 1.0.0 format. Codex reads that manifest before `.codex-plugin/plugin.json` and loads no plugin hooks for an Agent Plugins manifest, so on Codex the `SessionStart` hook stopped running and sessions lost the pstack routing instruction. Skills still loaded, and Claude Code was not affected. The root manifest is gone, so Codex reads `.codex-plugin/plugin.json` and its hooks again. The generator now fails when `plugins/pstack/plugin.json` exists, and the sync still excludes upstream's copy. A packaging test follows Codex's manifest lookup over the shipped plugin and checks that it finds the `SessionStart` hook, and that the 0.9.83 manifest would hide it. @Dude-Bear found the cause and confirmed it by moving the file aside, in [#265](https://github.com/michael-denyer/pstack-claude/issues/265).

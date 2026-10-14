@@ -11,6 +11,18 @@
       "rationale": "upstream's README is excluded and the port's README sits at the repository root, outside the skills tree"
     },
     {
+      "pattern": "a chart or diagram from `/visualize`",
+      "files": "^skills/ketchup/",
+      "replacement": "a chart or diagram",
+      "rationale": "`/visualize` is a Cursor built-in with no Claude Code skill"
+    },
+    {
+      "pattern": "and a `/visualize` chart for numbers",
+      "files": "^skills/ketchup/",
+      "replacement": "and a chart for numbers",
+      "rationale": "`/visualize` is a Cursor built-in with no Claude Code skill"
+    },
+    {
       "pattern": "repro this with /verify-<app>.",
       "files": "^skills/poteto-help/",
       "replacement": "repro this with /verify.",

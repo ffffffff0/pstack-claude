@@ -454,10 +454,13 @@ export function regions(models) {
       locate: tableRows("| Tier | Roles |", "| "),
       render: () =>
         [
+          ["Fast", "fast"],
           ["Default", "default"],
           ["Strongest", "strongest"],
           ["Panel", "panel"],
-        ].map(([label, tier]) => `| ${label} | ${models.roles.filter((r) => r.tier === tier).map((r) => code(r.role)).join(", ")} |`),
+        ]
+          .filter(([, tier]) => models.roles.some((r) => r.tier === tier))
+          .map(([label, tier]) => `| ${label} | ${models.roles.filter((r) => r.tier === tier).map((r) => code(r.role)).join(", ")} |`),
     },
     {
       file: `${PLUGIN}/hooks/session-start-copilot.md`,
