@@ -2,6 +2,10 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.9.87 - fork release on Michael's port 0.9.86
+
+Rebuilds this fork on Michael Denyer's port at 0.9.86 (Cursor pstack `99743e9`, v0.15.25; Cursor's later commits leave pstack unchanged). The fork's local changes are replayed: two-family panel defaults with the GPT seat on `cross-run.mjs`, branch-aware review bases, `pstack:reviewer` for read-only roles in `how`, `why`, `interrogate`, and `arena`, the agent rosters that name it, and the Copilot Fast tier row.
+
 ## 0.9.86 - sync to upstream 99743e9 (v0.15.25): adds /in-your-own-words and /sharpen
 
 The upstream pin moves from `997ffc7` to `99743e9`, upstream v0.15.25, 15 pstack commits. `/in-your-own-words` plays back the user's goal and the problem before work starts, and `/sharpen` aims a task the way a top expert would without overspecifying it. `/poteto-help` routes to both. `/ketchup` answers in about 150 words built on real visuals, and the autopilot ticks and replies catch the operator up through it. `principle-fix-root-causes` proposes a cheap always-on signal after a deep dig. `principle-attack-the-premise` and three other principles state their rules as reasoning, and four skills drop marginal sections. The package now carries 39 public skills and 24 principles.

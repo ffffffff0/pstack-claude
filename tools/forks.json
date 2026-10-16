@@ -36,22 +36,22 @@
       "since": "0.9.29",
       "upstream": "not-proposed"
     },
-    "plugins/pstack/skills/poteto-help/SKILL.md": {
+    "plugins/pstack/skills/how/SKILL.md": {
       "kind": "port-feature",
-      "why": "Routes installation, model-sheet loading, and persistent routing preferences to the current runtime's setup sources, gives installed playbooks precedence over upstream guides, and keeps the port's public skill loading, hidden principles, verification-skill naming, local-worker advice, driver and built-in equivalents, excluded make-bot-ui row, and orchestrate wording as prose changes in this fork.",
-      "since": "0.9.71",
-      "upstream": "not-proposed"
-    },
-    "plugins/pstack/skills/figure-it-out/SKILL.md": {
-      "kind": "policy",
-      "why": "Adds a 'costly fan-out: only when the user asks or a playbook step calls it' clause to the description, since the port lets the model invoke skills that upstream kept user-only.",
-      "since": "0.9.58",
+      "why": "Dispatches explorers and the explainer as pstack:reviewer, since Claude Code's Agent tool has no readonly field.",
+      "since": "0.9.85",
       "upstream": "not-proposed"
     },
     "plugins/pstack/skills/interrogate/SKILL.md": {
       "kind": "port-feature",
       "why": "Runs the cross-family reviewer seat through cross-run.mjs (with a single-family fallback) and adds the costly fan-out clause to the description.",
       "since": "0.9.58",
+      "upstream": "not-proposed"
+    },
+    "plugins/pstack/skills/poteto-help/SKILL.md": {
+      "kind": "port-feature",
+      "why": "Routes installation, model-sheet loading, and persistent routing preferences to the current runtime's setup sources, gives installed playbooks precedence over upstream guides, and keeps the port's public skill loading, hidden principles, verification-skill naming, local-worker advice, driver and built-in equivalents, excluded make-bot-ui row, and orchestrate wording as prose changes in this fork.",
+      "since": "0.9.71",
       "upstream": "not-proposed"
     },
     "plugins/pstack/skills/poteto-mode/SKILL.md": {
@@ -280,6 +280,12 @@
       "kind": "policy",
       "why": "Requires quoting the failure content, not the assertion line, as evidence that the new test fails for the intended reason.",
       "since": "0.9.21",
+      "upstream": "not-proposed"
+    },
+    "plugins/pstack/skills/why/SKILL.md": {
+      "kind": "port-feature",
+      "why": "Dispatches investigators and the synthesizer as pstack:reviewer, which blocks edits but keeps MCP access, since Claude Code's Agent tool has no readonly field.",
+      "since": "0.9.85",
       "upstream": "not-proposed"
     },
     "plugins/pstack/skills/why/references/epistemics.md": {
